@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="public/components/bootstrap/dist/css/bootstrap.min.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+      body {
+        margin-top: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-offset-2 col-sm-9">
+          <textarea class="form-controller col-xs-11" rows="30" id="sheet"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <script src="public/components/jquery/dist/jquery.min.js"></script>
+    <script src="public/components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="public/components/underscore/underscore.js"></script>
+    <script src="public/components/backbone/backbone.js"></script>
+    <script src="public/components/backbone/backbone.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+
+    <script>
+      var socket  = io.connect(window.location.href);
+      var $sheet  = $('#sheet')
+      socket.on('keypress', function(data) {
+        $sheet.val($sheet.val() + data.key)
+      })
+
+      $sheet.on('keypress', function(e) {
+        e.preventDefault()
+        console.log(e)
+        socket.emit('keypress', {keyCode: e.keyCode, key: e.key});
+      })
+    </script>
+
+  </body>
+</html>
