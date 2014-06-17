@@ -28,14 +28,19 @@
     <script>
       var socket  = io.connect(window.location.href);
       var $sheet  = $('#sheet')
+      var forbiddenKeys  = [8, 13, 40, 38, 37, 39]
       socket.on('keypress', function(data) {
-        $sheet.val($sheet.val() + data.key)
+        if (!_.contains(forbiddenKeys, data.keyCode)){
+          $sheet.val($sheet.val() + data.key)
+        }
       })
 
       $sheet.on('keypress', function(e) {
-        e.preventDefault()
-        console.log(e)
+        if (!_.contains(forbiddenKeys, e.keyCode)){
+          e.preventDefault()
+        }
         socket.emit('keypress', {keyCode: e.keyCode, key: e.key});
+        console.log(e)
       })
     </script>
 
