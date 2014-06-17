@@ -9,6 +9,7 @@ server.listen(port, function() {
 });
 
 app.use('/public/components', express.static(__dirname + '/public/components'));
+app.use('/public/javascripts', express.static(__dirname + '/public/javascripts'));
 
 app.get('/', function (req, res) {
   res.sendfile(__dirname + '/index.html');

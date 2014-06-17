@@ -23,24 +23,38 @@
     <script src="public/components/underscore/underscore.js"></script>
     <script src="public/components/backbone/backbone.js"></script>
     <script src="public/components/backbone/backbone.js"></script>
+    <script src="public/components/underscore.string/dist/underscore.string.min.js"></script>
+    <script src="public/javascripts/cursor_position.js"></script>
+    <script src="public/javascripts/move_cursor.js"></script>
     <script src="/socket.io/socket.io.js"></script>
 
     <script>
+      _.mixin(_.str.exports());
       var socket  = io.connect(window.location.href);
-      var $sheet  = $('#sheet')
-      var forbiddenKeys  = [8, 13, 40, 38, 37, 39]
+      var $sheet  = $('#sheet');
+      var forbiddenKeys  = [8, 13, 40, 38, 37, 39, 46];
       socket.on('keypress', function(data) {
         if (!_.contains(forbiddenKeys, data.keyCode)){
-          $sheet.val($sheet.val() + data.key)
+          $sheet.val(_.insert($sheet.val(), data.position, data.key));
+          if (data.socket = socket.socket.transport.sessid) {
+            $sheet.moveCursorPosition(data.position);
+          }
         }
       })
 
       $sheet.on('keypress', function(e) {
         if (!_.contains(forbiddenKeys, e.keyCode)){
-          e.preventDefault()
+          e.preventDefault();
         }
-        socket.emit('keypress', {keyCode: e.keyCode, key: e.key});
-        console.log(e)
+        socket.emit('keypress', 
+          {
+            position: $sheet.getCursorPosition(), 
+            keyCode: e.keyCode, 
+            socekt: socket.socket.transport.sessid,
+            key: e.key
+          }
+        );
+      console.log(e);
       })
     </script>
 
