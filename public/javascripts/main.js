@@ -1,32 +1,42 @@
 _.mixin(_.str.exports());
 var socket  = io.connect(window.location.href);
 var $sheet  = $('#sheet');
-var forbiddenKeys  = [8, 13, 40, 38, 37, 39, 46];
+var forbiddenKeys   = [40, 38, 37, 39];
+// var specialKeys     = [8, 13, 46];
 socket.on('keypress', function(data) {
-  // if (!_.contains(forbiddenKeys, data.keyCode)){
-  $sheet.val(_.insert($sheet.val(), data.position, data.key));
-  if (data.socket = socket.socket.transport.sessid) {
-    $sheet.moveCursorPosition(data.position);
+  if (!_.contains(forbiddenKeys, data.keyCode)){
+    var moveCursor = 0;
+    switch (data.keyCode) {
+      case 13:
+        $sheet.val(_.insert($sheet.val(), data.position, '\n'));
+        break;
+      case 8:
+        moveCursor = 2
+        $sheet.val(_.splice($sheet.val(), data.position -1, 1, ''));
+        break;
+      case 46:
+        moveCursor = 1
+        $sheet.val(_.splice($sheet.val(), data.position, 1, ''));
+        break;
+      default:
+        $sheet.val(_.insert($sheet.val(), data.position, data.key));
+    }
+    if (data.socket == socket.socket.transport.sessid) {
+      $sheet.moveCursorPosition(data.position - moveCursor);
+    }
   }
-  // }
 })
 
 $sheet.on('keypress', function(e) {
   if (!_.contains(forbiddenKeys, e.keyCode)){
     e.preventDefault();
-  } else {
-    switch (e.keyCode) {
-      case 13:
-        e.key = '\n';
-        break;
-    }
   }
   console.log(e);
   socket.emit('keypress',
               {
                 position: $sheet.getCursorPosition(),
                 keyCode: e.keyCode,
-                socekt: socket.socket.transport.sessid,
+                socket: socket.socket.transport.sessid,
                 key: e.key
               }
              );
