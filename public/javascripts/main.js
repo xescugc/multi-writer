@@ -6,24 +6,29 @@ var forbiddenKeys   = [40, 38, 37, 39];
 socket.on('keypress', function(data) {
   if (!_.contains(forbiddenKeys, data.keyCode)){
     var moveCursor = 0;
-    switch (data.keyCode) {
-      case 13:
-        $sheet.val(_.insert($sheet.val(), data.position, '\n'));
+    $sheet.getCursorPosition(function(currentCursorPosition) {
+      console.log(currentCursorPosition);
+      switch (data.keyCode) {
+        case 13:
+          $sheet.val(_.insert($sheet.val(), data.position, '\n'));
         break;
-      case 8:
-        moveCursor = 2
+        case 8:
+          moveCursor = 2
         $sheet.val(_.splice($sheet.val(), data.position -1, 1, ''));
         break;
-      case 46:
-        moveCursor = 1
+        case 46:
+          moveCursor = 1
         $sheet.val(_.splice($sheet.val(), data.position, 1, ''));
         break;
-      default:
-        $sheet.val(_.insert($sheet.val(), data.position, data.key));
-    }
-    if (data.socket == socket.socket.transport.sessid) {
-      $sheet.moveCursorPosition(data.position - moveCursor);
-    }
+        default:
+          $sheet.val(_.insert($sheet.val(), data.position, data.key));
+      }
+      if (data.socket == socket.socket.transport.sessid) {
+        $sheet.moveCursorPosition(data.position - moveCursor);
+      } else {
+        $sheet.moveCursorPosition(currentCursorPosition -1 );
+      }
+    });
   }
 })
 
